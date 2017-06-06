@@ -6,7 +6,7 @@ import java.util.UUID;
  * 消息基类
  * 
  * @author liangxy
- * @date 2016.01.19
+ * @date 2017.06.06
  */
 public class BaseMessage {
 	// 接收方账号（收到的openId）
@@ -18,7 +18,7 @@ public class BaseMessage {
 	// 消息类型（text/music/news）
 	private String MsgType;
 //	// 位0x0001 被标记时，星标刚收到的消息
-//	private int FuncFlag;
+	private int FuncFlag;
 	// 消息id
 	private long MsgId;
 
@@ -54,13 +54,13 @@ public class BaseMessage {
 		MsgType = msgType;
 	}
 
-//	public int getFuncFlag() {
-//		return FuncFlag;
-//	}
-//
-//	public void setFuncFlag(int funcFlag) {
-//		FuncFlag = funcFlag;
-//	}
+	public int getFuncFlag() {
+		return FuncFlag;
+	}
+
+	public void setFuncFlag(int funcFlag) {
+		FuncFlag = funcFlag;
+	}
 
 	public long getMsgId() {
 		return MsgId;

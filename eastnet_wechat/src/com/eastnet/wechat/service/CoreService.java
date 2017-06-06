@@ -1,13 +1,16 @@
 package com.eastnet.wechat.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.eastnet.wechat.main.MenuManager;
+import com.eastnet.wechat.message.resp.Article;
 import com.eastnet.wechat.message.resp.Image;
 import com.eastnet.wechat.message.resp.ImageMessage;
 import com.eastnet.wechat.message.resp.Music;
+import com.eastnet.wechat.message.resp.NewsMessage;
 import com.eastnet.wechat.message.resp.TextMessage;
 import com.eastnet.wechat.message.resp.Video;
 import com.eastnet.wechat.message.resp.VideoMessage;
@@ -17,7 +20,7 @@ import com.eastnet.wechat.pojo.AccessToken;
 import com.eastnet.wechat.utils.MessageUtil;
 import com.eastnet.wechat.utils.OperatorUtil;
 import com.eastnet.wechat.utils.WeixinUtil;
-
+import java.util.List;
 /**
  * 解耦，使控制层与业务逻辑层分离开来，主要处理请求，响应
  * 
@@ -30,7 +33,7 @@ public class CoreService {
 	static ImageMessage img = new ImageMessage();
 	static VoiceMessage voice = new VoiceMessage();
 	static VideoMessage video = new VideoMessage();
-
+	static NewsMessage newmsg=new NewsMessage();
 	public static String processRequest(HttpServletRequest request) {
 		String respMessage = null;
 		// 默认返回的文本消息类容
@@ -174,12 +177,31 @@ public class CoreService {
 			// 地理位置
 			else if (msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_LOCATION)) {
 				respContent = "您发送的是地理位置消息！";
-				System.out.println("你发的是地理位置信息");
+				String Label = requestMap.get("Label");
+				String Location_X = requestMap.get("Location_X");
+				String Location_Y = requestMap.get("Location_Y");
+				respContent=respContent+"当前位置："+Label
+						+"，纬度："+Location_X+"，经度："+Location_Y;
+				System.out.println("你发的是地理位置信息"+respContent);
 			}
 			// 链接消息
 			else if (msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_LINK)) {
 				respContent = "您发送的是链接消息！";
 				System.out.println("你发的是链接信息");
+				
+				  Article article=new Article();
+				    article.setDescription("gitHub使用的3种方法"); //图文消息的描述
+				    article.setPicUrl("https://mmbiz.qlogo.cn/mmbiz_png/xUqw2AeQjMG9uTUB0ia0pVBQBkVrWpR46gHyTZIEsicGVZm97KI3o0En5WxQBIOzlliafBvHUpNmEmvrb0QPBgib3g/0?wx_fmt=png"); //图文消息图片地址
+				    article.setTitle("收到《Ionic in Action》作者的email");  //图文消息标题
+				    article.setUrl("https://mp.weixin.qq.com/cgi-bin/appmsg?begin=0&count=10&t=media/appmsg_list2&type=10&action=list_list&token=2051922751&lang=zh_CN");  //图文url链接
+				    List<Article> list=new ArrayList<Article>();
+				    list.add(article);     //这里发送的是单图文，如果需要发送多图文则在这里list中加入多个Article即可！
+				    newmsg.setArticleCount(list.size());
+				    newmsg.setArticle(list);
+				    newmsg.setCreateTime(new Date().getTime());
+				    newmsg.setToUserName(fromUserName);// 接收方帐号（open_id）
+				    newmsg.setFromUserName(toUserName);// 公众账号
+				    newmsg.setMsgId(new Date().getTime());
 			}
 			// 音频消息
 			else if (msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_VOICE)) {
@@ -260,6 +282,8 @@ public class CoreService {
 			else if (msgType.equals(MessageUtil.RESP_MESSAGE_TYPE_VIDEO)) {
 				System.out.println("video:" + respContent);
 				respMessage = MessageUtil.messageToXml(video);// 回复发送给公众号的视频给用户
+			}else if (msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_LINK)) {
+				respMessage = MessageUtil.messageToXml(newmsg);// 回复发送给公众号的视频给用户
 			}
 		} catch (Exception e) {
 			respMessage = "err:" + MessageUtil.messageToXml(textMessage);

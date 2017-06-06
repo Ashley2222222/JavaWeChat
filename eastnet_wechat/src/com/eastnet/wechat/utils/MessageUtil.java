@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.io.xml.XppDriver;
  * 各种消息的处理类
  * 
  * @author liangxy
- * @date 2016.01.19
+ * @date 2017.06.06
  */
 
 public class MessageUtil {
@@ -220,9 +220,13 @@ public class MessageUtil {
 	 * 图文消息的对象转换成xml
 	 * 
 	 */
-	public static String newsMessageToXml(NewsMessage newsMessage) {
+	public static String messageToXml(NewsMessage newsMessage) {
 		xstream.alias("xml", newsMessage.getClass());
 		xstream.alias("item", new Article().getClass());
+		String xstreamStr = xstream.toXML(newsMessage).replace("<CreateTime><![CDATA[", "<CreateTime>");
+		xstreamStr = xstreamStr.replace("]]></CreateTime>", "</CreateTime>");
+		xstreamStr = xstreamStr.replace("<ArticleCount><![CDATA[", "<ArticleCount>");
+		xstreamStr = xstreamStr.replace("]]></ArticleCount>", "</ArticleCount>");
 		return xstream.toXML(newsMessage);
 	}
 

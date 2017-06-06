@@ -2,7 +2,7 @@ package com.eastnet.wechat.message.resp;
 /**
  * 响应的音乐消息
  * @author liangxy
- * @date 2016.01.19
+ * @date 2017.06.06
  */
 public class MusicMessage extends BaseMessage{
 	//音乐

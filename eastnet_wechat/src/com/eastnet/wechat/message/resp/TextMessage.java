@@ -2,7 +2,7 @@ package com.eastnet.wechat.message.resp;
 /**
  * 响应文本消息
  * @author liangxy
- * @date 2016.01.19
+ * @date 2017.06.06
  */
 public class TextMessage extends BaseMessage{
 	//回复的消息类容

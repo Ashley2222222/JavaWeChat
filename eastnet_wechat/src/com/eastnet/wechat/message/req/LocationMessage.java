@@ -2,7 +2,7 @@ package com.eastnet.wechat.message.req;
 /**
  * 地理位置消息
  * @author liangxy
- * @date 2016.01.19
+ * @date 2017.06.06
  */
 public class LocationMessage extends BaseMessage {
 	//地理位置维度

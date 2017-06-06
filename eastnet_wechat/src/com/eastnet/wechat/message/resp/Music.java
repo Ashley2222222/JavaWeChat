@@ -3,7 +3,7 @@ package com.eastnet.wechat.message.resp;
  * 音乐消息中的Music定义
  * 音乐中的model
  * @author liangxy
- * @date 2016.01.19
+ * @date 2017.06.06
  *
  */
 public class Music {

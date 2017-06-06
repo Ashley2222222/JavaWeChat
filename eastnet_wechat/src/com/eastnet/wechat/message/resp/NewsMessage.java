@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * 响应中的图文消息
  * @author liangxy
- * @2016.01.19
+ * @2017.06.06
  */
 public class NewsMessage extends BaseMessage{
 	//图文消息的个数，限制为10条以内

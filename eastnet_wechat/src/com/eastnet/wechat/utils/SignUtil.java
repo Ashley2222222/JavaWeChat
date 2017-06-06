@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 请求校验工具类
  * @author liangxy
- * @date 2016.01.19
+ * @date 2017.06.06
  */
 public class SignUtil {
 	//与微信配置中的的Token一致
