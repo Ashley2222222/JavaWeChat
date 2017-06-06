@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 请求校验工具类
- * @author pengsong
+ * @author liangxy
  * @date 2016.01.19
  */
 public class SignUtil {

@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * 响应中的图文消息
- * @author pengsong
+ * @author liangxy
  * @2016.01.19
  */
 public class NewsMessage extends BaseMessage{

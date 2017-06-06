@@ -1,8 +1,8 @@
 package com.eastnet.wechat.message.req;
 /**
  * 语音消息
- * @author pengsong
- * @date 2016.01.16
+ * @author liangxy
+ * @date 2017.06.06
  */
 public class VoiceMessage extends BaseMessage{
 	//媒体Id

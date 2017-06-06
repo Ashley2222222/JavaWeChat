@@ -14,7 +14,7 @@ public class Video {
     // 缩略图的媒体id
     private String ThumbMediaId;
 
-    public String getMediaId() {
+	public String getMediaId() {
         return MediaId;
     }
 

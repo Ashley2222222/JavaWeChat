@@ -1,7 +1,7 @@
 package com.eastnet.wechat.message.req;
 /**
  * 链接消息
- * @author pengsong
+ * @author liangxy
  * @date 2016.01.19
  */
 public class LinkMessage extends BaseMessage{

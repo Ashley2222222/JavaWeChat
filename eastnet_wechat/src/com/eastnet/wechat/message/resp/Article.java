@@ -2,7 +2,7 @@ package com.eastnet.wechat.message.resp;
 /**
  * 图文消息中的Article类的定义
  * 图文model
- * @author pengsong
+ * @author liangxy
  * @date 2015.01.19
  *
  */

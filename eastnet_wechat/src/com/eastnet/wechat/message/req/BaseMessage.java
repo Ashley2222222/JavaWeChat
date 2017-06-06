@@ -1,7 +1,7 @@
 package com.eastnet.wechat.message.req;
 /**
  * 消息基类 （普通用户-公众号） 事件基类封装
- * @author pengsong
+ * @author liangxy
  * @date 2015.01.19
  */
 public class BaseMessage {

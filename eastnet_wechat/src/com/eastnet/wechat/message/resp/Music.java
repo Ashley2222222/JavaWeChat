@@ -2,7 +2,7 @@ package com.eastnet.wechat.message.resp;
 /**
  * 音乐消息中的Music定义
  * 音乐中的model
- * @author pengsong
+ * @author liangxy
  * @date 2016.01.19
  *
  */

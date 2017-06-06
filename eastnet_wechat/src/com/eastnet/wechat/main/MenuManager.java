@@ -10,14 +10,16 @@ import com.eastnet.wechat.utils.WeixinUtil;
 public class MenuManager {
 //	private static Logger log = LoggerFactory.getLogger(MenuManager.class);  
 	  
-    public static void main(String[] args) {  
+    public static AccessToken at = null;
+
+	public static void main(String[] args) {  
         // 第三方用户唯一凭证  
         String appId = "wx03794779137f44e6";//"你的appID";  
         // 第三方用户唯一凭证密钥  
         String appSecret = "1b23236ed65e38d2052e6bdc085b8368";//"你的appSecret";  
   
         // 调用接口获取access_token  
-        AccessToken at = WeixinUtil.getAccessToken(appId, appSecret);  
+         at = WeixinUtil.getAccessToken(appId, appSecret);  
   
         if (null != at) {  
             // 调用接口创建菜单  
