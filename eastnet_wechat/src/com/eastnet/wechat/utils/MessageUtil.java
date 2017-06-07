@@ -181,7 +181,7 @@ public class MessageUtil {
 	 * 音乐消息的对象的转换成xml
 	 * 
 	 */
-	public static String musicMessageToXml(MusicMessage musicMessage) {
+	public static String messageToXml(MusicMessage musicMessage) {
 		xstream.alias("xml", musicMessage.getClass());
 		return xstream.toXML(musicMessage);
 	}
@@ -223,10 +223,7 @@ public class MessageUtil {
 	public static String messageToXml(NewsMessage newsMessage) {
 		xstream.alias("xml", newsMessage.getClass());
 		xstream.alias("item", new Article().getClass());
-		String xstreamStr = xstream.toXML(newsMessage).replace("<CreateTime><![CDATA[", "<CreateTime>");
-		xstreamStr = xstreamStr.replace("]]></CreateTime>", "</CreateTime>");
-		xstreamStr = xstreamStr.replace("<ArticleCount><![CDATA[", "<ArticleCount>");
-		xstreamStr = xstreamStr.replace("]]></ArticleCount>", "</ArticleCount>");
+		
 		return xstream.toXML(newsMessage);
 	}
 

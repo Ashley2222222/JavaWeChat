@@ -10,6 +10,7 @@ import com.eastnet.wechat.message.resp.Article;
 import com.eastnet.wechat.message.resp.Image;
 import com.eastnet.wechat.message.resp.ImageMessage;
 import com.eastnet.wechat.message.resp.Music;
+import com.eastnet.wechat.message.resp.MusicMessage;
 import com.eastnet.wechat.message.resp.NewsMessage;
 import com.eastnet.wechat.message.resp.TextMessage;
 import com.eastnet.wechat.message.resp.Video;
@@ -21,6 +22,7 @@ import com.eastnet.wechat.utils.MessageUtil;
 import com.eastnet.wechat.utils.OperatorUtil;
 import com.eastnet.wechat.utils.WeixinUtil;
 import java.util.List;
+
 /**
  * 解耦，使控制层与业务逻辑层分离开来，主要处理请求，响应
  * 
@@ -33,7 +35,9 @@ public class CoreService {
 	static ImageMessage img = new ImageMessage();
 	static VoiceMessage voice = new VoiceMessage();
 	static VideoMessage video = new VideoMessage();
-	static NewsMessage newmsg=new NewsMessage();
+	static NewsMessage newmsg = new NewsMessage();
+	static MusicMessage musicmsg = new MusicMessage();
+
 	public static String processRequest(HttpServletRequest request) {
 		String respMessage = null;
 		// 默认返回的文本消息类容
@@ -143,16 +147,38 @@ public class CoreService {
 				// respContent="你发的是文本信息:"+fromContent;
 				fromContent = requestMap.get("Content");
 				respContent = fromContent;
-				/*
-				 * Connection conn=new DBCPConnection().getConnection();
-				 * if(conn==null){ respContent="连接数据库失败"; }else{ int count =0;
-				 * String sql="select * from crm_student_info";
-				 * PreparedStatement ps=conn.prepareStatement(sql); ResultSet
-				 * rs=ps.executeQuery(); while (rs.next()) { if(count>6){ break;
-				 * } String name=rs.getString("exam_time");
-				 * sb.append(name).append("/n"); count++; } }
-				 * respContent=sb.toString();
-				 */
+				if (fromContent.contains("Ionic")) {// 根据特定字符串返回相应图文消息
+					msgType = MessageUtil.REQ_MESSSAGE_TYPE_LINK;
+					Article article = new Article();
+					List<Article> list = new ArrayList<Article>();
+					article = new Article();
+					article.setDescription("Ionic中会大量使用AngularJS基础知识，所以先来了解下AngularJS"); // 图文消息的描述
+					article.setPicUrl(
+							"http://mmbiz.qpic.cn/mmbiz_jpg/xUqw2AeQjMHEbRaKzGeqkzic0keHWB5JajuL5asRs0bL7aWqUsnEdYSlNePHhtuGHwQlWN23S4PnNZt3S8eIwicQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1"); // 图文消息图片地址
+					article.setTitle("Ionic开发准备：AngularJs介绍 "); // 图文消息标题
+					article.setUrl("http://mp.weixin.qq.com/s/rtQu0C9aEb1_3wypdqZYNQ"); // 图文url链接
+					list.add(article); // 这里发送的是单图文，如果需要发送多图文则在这里list中加入多个Article即可！
+
+					newmsg.setArticleCount(list.size());
+					newmsg.setArticles(list);
+					newmsg.setCreateTime(new Date().getTime());
+					newmsg.setToUserName(fromUserName);// 接收方帐号（open_id）
+					newmsg.setFromUserName(toUserName);// 公众账号
+					newmsg.setMsgId(new Date().getTime());
+					newmsg.setMsgType(MessageUtil.RESP_MESSSAGE_TYPE_NEWS);
+					//
+				}		else	if (fromContent.contains("杨千嬅")) {// 根据特定字符串返回相应歌曲
+				} /*
+					 * Connection conn=new DBCPConnection().getConnection();
+					 * if(conn==null){ respContent="连接数据库失败"; }else{ int count
+					 * =0; String sql="select * from crm_student_info";
+					 * PreparedStatement ps=conn.prepareStatement(sql);
+					 * ResultSet rs=ps.executeQuery(); while (rs.next()) {
+					 * if(count>6){ break; } String
+					 * name=rs.getString("exam_time");
+					 * sb.append(name).append("/n"); count++; } }
+					 * respContent=sb.toString();
+					 */
 				// respContent = new OpenDBConnection().selectData("select *
 				// from crm_student_info");
 			}
@@ -164,7 +190,28 @@ public class CoreService {
 				String MediaId = requestMap.get("MediaId");
 				System.out.println(MediaId);
 				Image im = new Image(MediaId);
-				img.setImage(im);
+		
+					msgType = MessageUtil.RESP_MESSSAGE_TYPE_MUSIC;
+					Music music = new Music();
+					music.setMusicUrl("http://119.23.20.192/eastnet_wechat/song1.mp3");
+					music.setHQMusicUrl("http://119.23.20.192/eastnet_wechat/song1.mp3");
+//					music.setThumbMediaId(
+//							"https://mmbiz.qlogo.cn/mmbiz_jpg/xUqw2AeQjME0PhtgT7u2ctmqKpyk9iaKoKrxLAjn74yw675upjxmtmgIbCvgmCScpGaSyMRzAQWBarFxCgpK3lg/0?wx_fmt=jpeg");
+					music.setTitle("少女的祈祷");
+					music.setDescription("杨千嬅");
+					music.setThumbMediaId(MediaId);
+					musicmsg.setMusic(music);
+					musicmsg.setToUserName(fromUserName);// 接收方帐号（open_id）
+					musicmsg.setFromUserName(toUserName);// 公众账号
+					musicmsg.setCreateTime(new Date().getTime());
+					musicmsg.setMsgType(MessageUtil.RESP_MESSSAGE_TYPE_MUSIC);
+					musicmsg.setFuncFlag(0);
+					musicmsg.setMsgId(new Date().getTime());
+
+			
+				
+				
+/*				img.setImage(im);
 				img.setToUserName(fromUserName);// 接收方帐号（open_id）
 				img.setFromUserName(toUserName);// 公众账号
 				img.setCreateTime(new Date().getTime());
@@ -173,35 +220,45 @@ public class CoreService {
 				img.setMsgId(new Date().getTime());
 				// respContent = "您发送的是图片消息！"+picUrl;
 				System.out.println("你发的是图片信息picUrl=" + picUrl);
-			}
+*/			}
 			// 地理位置
 			else if (msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_LOCATION)) {
 				respContent = "您发送的是地理位置消息！";
 				String Label = requestMap.get("Label");
 				String Location_X = requestMap.get("Location_X");
 				String Location_Y = requestMap.get("Location_Y");
-				respContent=respContent+"当前位置："+Label
-						+"，纬度："+Location_X+"，经度："+Location_Y;
-				System.out.println("你发的是地理位置信息"+respContent);
+				respContent = respContent + "当前位置：" + Label + "，纬度：" + Location_X + "，经度：" + Location_Y;
+				System.out.println("你发的是地理位置信息" + respContent);
 			}
 			// 链接消息
 			else if (msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_LINK)) {
-				respContent = "您发送的是链接消息！";
-				System.out.println("你发的是链接信息");
-				
-				  Article article=new Article();
-				    article.setDescription("gitHub使用的3种方法"); //图文消息的描述
-				    article.setPicUrl("https://mmbiz.qlogo.cn/mmbiz_png/xUqw2AeQjMG9uTUB0ia0pVBQBkVrWpR46gHyTZIEsicGVZm97KI3o0En5WxQBIOzlliafBvHUpNmEmvrb0QPBgib3g/0?wx_fmt=png"); //图文消息图片地址
-				    article.setTitle("收到《Ionic in Action》作者的email");  //图文消息标题
-				    article.setUrl("https://mp.weixin.qq.com/cgi-bin/appmsg?begin=0&count=10&t=media/appmsg_list2&type=10&action=list_list&token=2051922751&lang=zh_CN");  //图文url链接
-				    List<Article> list=new ArrayList<Article>();
-				    list.add(article);     //这里发送的是单图文，如果需要发送多图文则在这里list中加入多个Article即可！
-				    newmsg.setArticleCount(list.size());
-				    newmsg.setArticle(list);
-				    newmsg.setCreateTime(new Date().getTime());
-				    newmsg.setToUserName(fromUserName);// 接收方帐号（open_id）
-				    newmsg.setFromUserName(toUserName);// 公众账号
-				    newmsg.setMsgId(new Date().getTime());
+				// respContent = "您发送的是链接消息！";
+				// System.out.println("你发的是链接信息");
+				// news1
+				Article article = new Article();
+				List<Article> list = new ArrayList<Article>();
+				article.setDescription("gitHub使用的3种方法"); // 图文消息的描述
+				article.setPicUrl(
+						"http://mmbiz.qpic.cn/mmbiz_png/xUqw2AeQjMG9uTUB0ia0pVBQBkVrWpR46gHyTZIEsicGVZm97KI3o0En5WxQBIOzlliafBvHUpNmEmvrb0QPBgib3g/640?wx_fmt=png&wxfrom=5&wx_lazy=1"); // 图文消息图片地址
+				article.setTitle("收到《Ionic in Action》作者的email"); // 图文消息标题
+				article.setUrl("http://mp.weixin.qq.com/s/DmesYW4lC7hyHi4EIlYwgQ"); // 图文url链接
+				list.add(article); // 这里发送的是单图文，如果需要发送多图文则在这里list中加入多个Article即可！
+				// news2
+				article = new Article();
+				article.setDescription("Ionic中会大量使用AngularJS基础知识，所以先来了解下AngularJS"); // 图文消息的描述
+				article.setPicUrl(
+						"http://mmbiz.qpic.cn/mmbiz_jpg/xUqw2AeQjMHEbRaKzGeqkzic0keHWB5JajuL5asRs0bL7aWqUsnEdYSlNePHhtuGHwQlWN23S4PnNZt3S8eIwicQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1"); // 图文消息图片地址
+				article.setTitle("Ionic开发准备：AngularJs介绍 "); // 图文消息标题
+				article.setUrl("http://mp.weixin.qq.com/s/rtQu0C9aEb1_3wypdqZYNQ"); // 图文url链接
+				list.add(article); // 这里发送的是单图文，如果需要发送多图文则在这里list中加入多个Article即可！
+
+				newmsg.setArticleCount(list.size());
+				newmsg.setArticles(list);
+				newmsg.setCreateTime(new Date().getTime());
+				newmsg.setToUserName(fromUserName);// 接收方帐号（open_id）
+				newmsg.setFromUserName(toUserName);// 公众账号
+				newmsg.setMsgId(new Date().getTime());
+				newmsg.setMsgType(MessageUtil.RESP_MESSSAGE_TYPE_NEWS);
 			}
 			// 音频消息
 			else if (msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_VOICE)) {
@@ -278,12 +335,15 @@ public class CoreService {
 				respMessage = MessageUtil.messageToXml(img);// 回复发送给公众号的图片给用户
 			else if (msgType.equals(MessageUtil.RESP_MESSAGE_TYPE_VOICE)) {
 				respMessage = MessageUtil.messageToXml(voice);// 回复发送给公众号的音频给用户
-			}
-			else if (msgType.equals(MessageUtil.RESP_MESSAGE_TYPE_VIDEO)) {
+			} else if (msgType.equals(MessageUtil.RESP_MESSAGE_TYPE_VIDEO)) {
 				System.out.println("video:" + respContent);
 				respMessage = MessageUtil.messageToXml(video);// 回复发送给公众号的视频给用户
-			}else if (msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_LINK)) {
+			} else if (msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_LINK)) {
 				respMessage = MessageUtil.messageToXml(newmsg);// 回复发送给公众号的视频给用户
+			} else if (msgType.equals(MessageUtil.RESP_MESSSAGE_TYPE_MUSIC)) {
+				respMessage = MessageUtil.messageToXml(musicmsg);// 回复发送给公众号的视频给用户
+				respMessage.replace("<CreateTime><![CDATA[", "<CreateTime>");
+				respMessage = respMessage.replace("]]></CreateTime>", "</CreateTime>");
 			}
 		} catch (Exception e) {
 			respMessage = "err:" + MessageUtil.messageToXml(textMessage);

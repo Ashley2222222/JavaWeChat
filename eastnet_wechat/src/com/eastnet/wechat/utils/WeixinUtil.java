@@ -98,9 +98,8 @@ public class WeixinUtil {
 	    System.out.println("requestUrl:");
 	    String requestUrl = access_token_url.replace("APPID", appid).replace("APPSECRET", appsecret);  
 	    System.out.println(requestUrl);
-	    System.out.println("jsonObject:");
 	    JSONObject jsonObject = httpRequest(requestUrl, "GET", null);  
-	    System.out.println(jsonObject.toString());
+
 	    // 如果请求成功  
 	    if (null != jsonObject) {  
 	        try {  
@@ -111,6 +110,8 @@ public class WeixinUtil {
 	            accessToken = null;  
 	            // 获取token失败  
 	            System.out.println("获取token失败 errcode:"+jsonObject.getInt("errcode")+"errmsg:"+jsonObject.getString("errmsg"));
+	    	    System.out.println("jsonObject:");
+	            System.out.println(jsonObject.toString());
 //	            log.error("获取token失败 errcode:{} errmsg:{}", jsonObject.getInt("errcode"), jsonObject.getString("errmsg"));  
 	        }  
 	    }  
