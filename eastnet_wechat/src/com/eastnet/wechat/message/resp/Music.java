@@ -15,8 +15,8 @@ public class Music {
 	private String MusicUrl;
 	//高质量音乐链接，WIFI环境下优先使用该链接播放音乐
 	private String HQMusicUrl;
-	 // 缩略图的媒体id，通过上传多媒体文件得到的id
-    private String ThumbMediaId;
+//	 // 缩略图的媒体id，通过上传多媒体文件得到的id,必须是通过微信认证的服务号才能得到，普通的服务号与订阅号可以忽略该参数
+//    private String ThumbMediaId;
 
 	public String getTitle() {
 		return Title;
@@ -38,13 +38,13 @@ public class Music {
 		HQMusicUrl = hQMusicUrl;
 	}
 
-    public String getThumbMediaId() {
-        return ThumbMediaId;
-    }
-
-    public void setThumbMediaId(String thumbMediaId) {
-        ThumbMediaId = thumbMediaId;
-    }
+//    public String getThumbMediaId() {
+//        return ThumbMediaId;
+//    }
+//
+//    public void setThumbMediaId(String thumbMediaId) {
+//        ThumbMediaId = thumbMediaId;
+//    }
 	
 	public String getMusicUrl() {
 		return MusicUrl;
@@ -52,4 +52,10 @@ public class Music {
 	public void setMusicUrl(String musicUrl) {
 		MusicUrl = musicUrl;
 	}
+//	public String getThumbMediaId() {
+//		return ThumbMediaId;
+//	}
+//	public void setThumbMediaId(String thumbMediaId) {
+//		ThumbMediaId = thumbMediaId;
+//	}
 }

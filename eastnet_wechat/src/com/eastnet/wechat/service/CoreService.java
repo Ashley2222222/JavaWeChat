@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-
+import com.eastnet.wechat.service.BaiduMusicService;
 import com.eastnet.wechat.main.MenuManager;
 import com.eastnet.wechat.message.resp.Article;
 import com.eastnet.wechat.message.resp.Image;
@@ -136,7 +136,7 @@ public class CoreService {
 			textMessage.setToUserName(fromUserName);// 接收方帐号（open_id）
 			textMessage.setFromUserName(toUserName);// 公众账号
 			textMessage.setCreateTime(new Date().getTime());
-			textMessage.setMsgType(MessageUtil.RESP_MESSSAGE_TYPE_TEXT);
+			textMessage.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_TEXT);
 			// textMessage.setFuncFlag(0);
 			textMessage.setMsgId(new Date().getTime());
 			// System.out.println("id:"+textMessage.getMsgId()+"");
@@ -145,7 +145,7 @@ public class CoreService {
 			// 文本消息
 			if (msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_TEXT)) {
 				// respContent="你发的是文本信息:"+fromContent;
-				fromContent = requestMap.get("Content");
+				fromContent = requestMap.get("Content").trim();
 				respContent = fromContent;
 				if (fromContent.contains("Ionic")) {// 根据特定字符串返回相应图文消息
 					msgType = MessageUtil.REQ_MESSSAGE_TYPE_LINK;
@@ -165,10 +165,83 @@ public class CoreService {
 					newmsg.setToUserName(fromUserName);// 接收方帐号（open_id）
 					newmsg.setFromUserName(toUserName);// 公众账号
 					newmsg.setMsgId(new Date().getTime());
-					newmsg.setMsgType(MessageUtil.RESP_MESSSAGE_TYPE_NEWS);
+					newmsg.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_NEWS);
 					//
-				}		else	if (fromContent.contains("杨千嬅")) {// 根据特定字符串返回相应歌曲
-				} /*
+				} else if (fromContent.contains("杨千嬅")) {// 根据特定字符串返回相应歌曲
+					msgType = MessageUtil.RESP_MESSAGE_TYPE_MUSIC;
+					Music music = new Music();
+					music.setMusicUrl("http://119.23.20.192/eastnet_wechat/song1.mp3");
+					music.setHQMusicUrl("http://119.23.20.192/eastnet_wechat/song1.mp3");
+					music.setTitle("少女的祈祷");
+					music.setDescription("杨千嬅");
+//					music.setThumbMediaId("https://mmbiz.qlogo.cn/mmbiz_jpg/xUqw2AeQjME0PhtgT7u2ctmqKpyk9iaKoKrxLAjn74yw675upjxmtmgIbCvgmCScpGaSyMRzAQWBarFxCgpK3lg/0?wx_fmt=jpeg");
+					musicmsg.setMusic(music);
+					musicmsg.setToUserName(fromUserName);// 接收方帐号（open_id）
+					musicmsg.setFromUserName(toUserName);// 公众账号
+					musicmsg.setCreateTime(new Date().getTime());
+					musicmsg.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_MUSIC);
+				}  // 文本消息内容  如果以“歌曲”2个字开头  
+				else if (fromContent.startsWith("歌曲")) {  
+                    // 将歌曲2个字及歌曲后面的+、空格、-等特殊符号去掉  
+                    String keyWord = fromContent.replaceAll("^歌曲[\\+ ~!@#%^-_=]?", "");  
+                    // 如果歌曲名称为空  
+                    if ("".equals(keyWord)) {  
+                        respContent = getUsage();  
+                    } else {  
+                        String[] kwArr = keyWord.split("@");  
+                        // 歌曲名称  
+                        String musicTitle = kwArr[0];  
+                        // 演唱者默认为空  
+                        String musicAuthor = "";  
+                        if (2 == kwArr.length)  
+                            musicAuthor = kwArr[1];  
+  
+                        // 搜索音乐  
+                        Music music =BaiduMusicService.searchMusic(musicTitle, musicAuthor);  
+                        // 未搜索到音乐  
+                        if (null == music) {  
+                            respContent = "对不起，没有找到你想听的歌曲<" + musicTitle + ">。";  
+                        } else {  
+                            // 音乐消息  
+                        	msgType = MessageUtil.RESP_MESSAGE_TYPE_MUSIC;
+                        	musicmsg.setToUserName(fromUserName);  
+                        	musicmsg.setFromUserName(toUserName);  
+                        	musicmsg.setCreateTime(new Date().getTime());  
+                        	musicmsg.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_MUSIC);  
+                        	musicmsg.setMusic(music);  
+                        }  
+                    }  
+                }else if (fromContent.startsWith("视频")) { 
+					msgType = MessageUtil.RESP_MESSAGE_TYPE_VIDEO;
+
+                	String mediaId = requestMap.get("MediaId");
+    				System.out.println("MediaId:" + mediaId);
+    				String ThumbMediaId = requestMap.get("ThumbMediaId");
+    				System.out.println("ThumbMediaId:" + ThumbMediaId);
+    				video = new VideoMessage();
+    				Video vo = new Video();
+    				vo.setMediaId(mediaId);
+    				vo.setThumbMediaId(ThumbMediaId);
+    				vo.setTitle("title");
+    				vo.setDescription("description");
+    				video.setVideo(vo);
+    				video.setToUserName(fromUserName);// 接收方帐号（open_id）
+    				video.setFromUserName(toUserName);// 公众账号
+    				video.setCreateTime(new Date().getTime());
+    				video.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_VIDEO);
+    				video.setMsgId(new Date().getTime());
+                } 
+				// 未搜索到音乐时返回使用指南  
+	            if (null == respMessage) {  
+	                if (null == respContent)  
+	                    respContent = getUsage();  
+	                textMessage.setContent(respContent);  
+	                respMessage = MessageUtil.messageToXml(textMessage);  
+	            }
+            }  
+            
+					/*
+				
 					 * Connection conn=new DBCPConnection().getConnection();
 					 * if(conn==null){ respContent="连接数据库失败"; }else{ int count
 					 * =0; String sql="select * from crm_student_info";
@@ -181,7 +254,7 @@ public class CoreService {
 					 */
 				// respContent = new OpenDBConnection().selectData("select *
 				// from crm_student_info");
-			}
+	
 			// 图片消息
 
 			else if (msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_IMAGE)) {
@@ -190,28 +263,8 @@ public class CoreService {
 				String MediaId = requestMap.get("MediaId");
 				System.out.println(MediaId);
 				Image im = new Image(MediaId);
-		
-					msgType = MessageUtil.RESP_MESSSAGE_TYPE_MUSIC;
-					Music music = new Music();
-					music.setMusicUrl("http://119.23.20.192/eastnet_wechat/song1.mp3");
-					music.setHQMusicUrl("http://119.23.20.192/eastnet_wechat/song1.mp3");
-//					music.setThumbMediaId(
-//							"https://mmbiz.qlogo.cn/mmbiz_jpg/xUqw2AeQjME0PhtgT7u2ctmqKpyk9iaKoKrxLAjn74yw675upjxmtmgIbCvgmCScpGaSyMRzAQWBarFxCgpK3lg/0?wx_fmt=jpeg");
-					music.setTitle("少女的祈祷");
-					music.setDescription("杨千嬅");
-					music.setThumbMediaId(MediaId);
-					musicmsg.setMusic(music);
-					musicmsg.setToUserName(fromUserName);// 接收方帐号（open_id）
-					musicmsg.setFromUserName(toUserName);// 公众账号
-					musicmsg.setCreateTime(new Date().getTime());
-					musicmsg.setMsgType(MessageUtil.RESP_MESSSAGE_TYPE_MUSIC);
-					musicmsg.setFuncFlag(0);
-					musicmsg.setMsgId(new Date().getTime());
 
-			
-				
-				
-/*				img.setImage(im);
+				img.setImage(im);
 				img.setToUserName(fromUserName);// 接收方帐号（open_id）
 				img.setFromUserName(toUserName);// 公众账号
 				img.setCreateTime(new Date().getTime());
@@ -220,7 +273,7 @@ public class CoreService {
 				img.setMsgId(new Date().getTime());
 				// respContent = "您发送的是图片消息！"+picUrl;
 				System.out.println("你发的是图片信息picUrl=" + picUrl);
-*/			}
+			}
 			// 地理位置
 			else if (msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_LOCATION)) {
 				respContent = "您发送的是地理位置消息！";
@@ -258,7 +311,7 @@ public class CoreService {
 				newmsg.setToUserName(fromUserName);// 接收方帐号（open_id）
 				newmsg.setFromUserName(toUserName);// 公众账号
 				newmsg.setMsgId(new Date().getTime());
-				newmsg.setMsgType(MessageUtil.RESP_MESSSAGE_TYPE_NEWS);
+				newmsg.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_NEWS);
 			}
 			// 音频消息
 			else if (msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_VOICE)) {
@@ -279,20 +332,23 @@ public class CoreService {
 			// 视频消息
 			else if (msgType.equals(MessageUtil.REQ_MESSAGE_TYPE_VIDEO)) {
 				String mediaId = requestMap.get("MediaId");
-				System.out.println("mediaId:" + mediaId);
+				System.out.println("MediaId:" + mediaId);
+				String ThumbMediaId = requestMap.get("ThumbMediaId");
+				System.out.println("ThumbMediaId:" + ThumbMediaId);
 
 				Video vo = new Video();
 				vo.setMediaId(mediaId);
-				vo.setThumbMediaId(mediaId);
+				vo.setThumbMediaId(ThumbMediaId);
+//				vo.setTitle("title");
+//				vo.setDescription("description");
 				video.setVideo(vo);
 				video.setToUserName(fromUserName);// 接收方帐号（open_id）
 				video.setFromUserName(toUserName);// 公众账号
 				video.setCreateTime(new Date().getTime());
 				video.setMsgType(MessageUtil.RESP_MESSAGE_TYPE_VIDEO);
-				// img.setFuncFlag(0);
 				video.setMsgId(new Date().getTime());
 				respContent = "您发送的是视频消息！" + mediaId;
-				System.out.println("你发的是视频信息" + mediaId);
+//				System.out.println("你发的是视频信息" + mediaId);
 			}
 			// 事件推送
 			else if (msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_EVENT)) {
@@ -311,24 +367,8 @@ public class CoreService {
 					System.out.println("自定义菜单消息处理");
 				}
 			}
-			System.out.println("respContent:" + respContent);
+//			System.out.println("respContent:" + respContent);
 			textMessage.setContent(respContent);
-			// respMessage=("\n<xml><ToUserName><![CDATA["+requestMap.get("FromUserName")+
-			// "]]></ToUserName>"+"<FromUserName><![CDATA["+requestMap.get("ToUserName")
-			// +"]]></FromUserName><CreateTime>"
-			// +"</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA["
-			// +respContent+"]]>"
-			// +"<MsgId>"+textMessage.getMsgId()+
-			// "</MsgId>"+"</Content></xml>");
-			// if("".equals(respContent)||(respContent==null)){
-			// respMessage=("<xml><ToUserName><![CDATA["+requestMap.get("FromUserName")+
-			// "]]></ToUserName>"+"<FromUserName><![CDATA["+requestMap.get("ToUserName")
-			// +"]]></FromUserName><CreateTime>"+System.currentTimeMillis()+"</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[查无此人]]></Content></xml>");
-			// }else{
-			// respMessage=("<xml><ToUserName><![CDATA["+requestMap.get("FromUserName")+
-			// "]]></ToUserName>"+"<FromUserName><![CDATA["+requestMap.get("ToUserName")
-			// +"]]></FromUserName><CreateTime>"+System.currentTimeMillis()+"</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA["+respContent+"]]></Content></xml>");
-			// }
 
 			respMessage = MessageUtil.messageToXml(textMessage);
 			if (msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_IMAGE))
@@ -336,25 +376,31 @@ public class CoreService {
 			else if (msgType.equals(MessageUtil.RESP_MESSAGE_TYPE_VOICE)) {
 				respMessage = MessageUtil.messageToXml(voice);// 回复发送给公众号的音频给用户
 			} else if (msgType.equals(MessageUtil.RESP_MESSAGE_TYPE_VIDEO)) {
-				System.out.println("video:" + respContent);
+				System.out.println("----------video------------");
 				respMessage = MessageUtil.messageToXml(video);// 回复发送给公众号的视频给用户
+//				respMessage = MessageUtil.messageToXml(textMessage);
 			} else if (msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_LINK)) {
 				respMessage = MessageUtil.messageToXml(newmsg);// 回复发送给公众号的视频给用户
-			} else if (msgType.equals(MessageUtil.RESP_MESSSAGE_TYPE_MUSIC)) {
+			} else if (msgType.equals(MessageUtil.RESP_MESSAGE_TYPE_MUSIC)) {
 				respMessage = MessageUtil.messageToXml(musicmsg);// 回复发送给公众号的视频给用户
-				respMessage.replace("<CreateTime><![CDATA[", "<CreateTime>");
-				respMessage = respMessage.replace("]]></CreateTime>", "</CreateTime>");
 			}
 		} catch (Exception e) {
 			respMessage = "err:" + MessageUtil.messageToXml(textMessage);
-			// if(msgType.equals(MessageUtil.REQ_MESSSAGE_TYPE_IMAGE))
-			// respMessage = "err:"+MessageUtil.messageToXml(img);
-			// respMessage=("\n<xml><ToUserName><![CDATA["+fromUserName+
-			// "]]></ToUserName>"+"<FromUserName><![CDATA["+toUserName
-			// +"]]></FromUserName><CreateTime>"+System.currentTimeMillis()
-			// +"<MsgId>"+System.currentTimeMillis()+ "123456"+"</MsgId>"
-			// +"</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA["+respContent+"]]></Content></xml>");
 		}
 		return respMessage;
 	}
+	 /** 
+     * 歌曲点播使用指南 
+     *  
+     * @return 
+     */  
+    public static String getUsage() {  
+        StringBuffer buffer = new StringBuffer();  
+        buffer.append("歌曲点播操作指南").append("\n\n");  
+        buffer.append("回复：歌曲+歌名").append("\n");  
+        buffer.append("例如：歌曲存在").append("\n");  
+        buffer.append("或者：歌曲存在@汪峰").append("\n\n");  
+        buffer.append("回复“?”显示主菜单");  
+        return buffer.toString();  
+    }  
 }

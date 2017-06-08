@@ -36,15 +36,15 @@ public class MessageUtil {
 	/**
 	 * 返回信息类型：文本
 	 */
-	public static final String RESP_MESSSAGE_TYPE_TEXT = "text";
+	public static final String RESP_MESSAGE_TYPE_TEXT = "text";
 	/**
 	 * 返回信息类型：音乐
 	 */
-	public static final String RESP_MESSSAGE_TYPE_MUSIC = "music";
+	public static final String RESP_MESSAGE_TYPE_MUSIC = "music";
 	/**
 	 * 返回信息类型：图文
 	 */
-	public static final String RESP_MESSSAGE_TYPE_NEWS = "news";
+	public static final String RESP_MESSAGE_TYPE_NEWS = "news";
 	/**
 	 * 返回信息类型：图片
 	 */
@@ -195,10 +195,6 @@ public class MessageUtil {
 	 */
 	public static String messageToXml(VoiceMessage voiceMessage) {
 		xstream.alias("xml", voiceMessage.getClass());
-		String xstreamStr = xstream.toXML(voiceMessage).replace("<MediaId><![CDATA[", "<MediaId>");
-		xstreamStr = xstreamStr.replace("]]></MediaId>", "</MediaId>");
-		xstreamStr = xstreamStr.replace("<CreateTime><![CDATA[", "<CreateTime>");
-		xstreamStr = xstreamStr.replace("]]></CreateTime>", "</CreateTime>");
 		return xstream.toXML(voiceMessage);
 	}
 
@@ -213,8 +209,11 @@ public class MessageUtil {
 		xstream.alias("xml", videoMessage.getClass());
 		String xstreamStr = xstream.toXML(videoMessage).replace("<CreateTime><![CDATA[", "<CreateTime>");
 		xstreamStr = xstreamStr.replace("]]></CreateTime>", "</CreateTime>");
-		return xstream.toXML(videoMessage);
-	}
+		xstreamStr = xstreamStr.replace("<MsgId><![CDATA[", "<MsgId>");
+		xstreamStr = xstreamStr.replace("]]></MsgId>", "</MsgId>");
+		return xstreamStr;
+//		return xstream.toXML(videoMessage);
+}
 
 	/**
 	 * 图文消息的对象转换成xml
