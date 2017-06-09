@@ -232,7 +232,6 @@ public class CoreService {
 						}
 					}
 					respContent = sb.toString();
-
 					respContent = new OpenDBConnection().selectData("select *from crm_student_info");
 					respContent = new OperatorUtil().bindAccount(fromUserName, userName);
 				} else if (fromContent.contains("解除绑定")) {

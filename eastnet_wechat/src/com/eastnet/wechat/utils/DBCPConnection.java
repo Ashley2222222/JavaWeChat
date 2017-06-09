@@ -24,6 +24,7 @@ public class DBCPConnection {
 	        ds.setUrl("jdbc:mysql://192.168.22.68:3306/wechat?autoReconnect=true&useUnicode=true&characterEncoding=utf8");
 	        ds.setDriverClassName("com.mysql.jdbc.Driver");
 	        
+	        
 	        ds.setMaxActive(20);
 	        ds.setMaxIdle(10);
 	        ds.setInitialSize(10);
