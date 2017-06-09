@@ -19,7 +19,9 @@ public class DBCPConnection {
 	        BasicDataSource ds = new BasicDataSource();
 	        ds.setUsername("root");
 	        ds.setPassword("root");
-	        ds.setUrl("jdbc:mysql://localhost:3306/artexam?autoReconnect=true&useUnicode=true&characterEncoding=utf8");
+//	        ds.setUrl("jdbc:mysql://localhost:3306/artexam?autoReconnect=true&useUnicode=true&characterEncoding=utf8");
+//	        ds.setUrl("jdbc:mysql://119.23.20.192:3306/artexam?autoReconnect=true&useUnicode=true&characterEncoding=utf8");
+	        ds.setUrl("jdbc:mysql://192.168.22.68:3306/wechat?autoReconnect=true&useUnicode=true&characterEncoding=utf8");
 	        ds.setDriverClassName("com.mysql.jdbc.Driver");
 	        
 	        ds.setMaxActive(20);
