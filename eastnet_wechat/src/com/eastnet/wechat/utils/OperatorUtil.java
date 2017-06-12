@@ -9,6 +9,20 @@ import java.util.List;
 
 import com.mysql.jdbc.StringUtils;
 
+/**
+ * 1.获取账号绑定状态crm_stu_wechat
+ * 2.获取所有用户qx_users
+ * 3.绑定账号，将发送方微信账号与系统账号绑定crm_stu_wechat
+ * 4.解除账号绑定
+ * 5.行程添加
+ * 6.行程查看
+ * 7.查看个人信息
+ * 8.修改学生信息页面
+ * 9.修改行程
+ */
+
+
+
 public class OperatorUtil {
     /**
      * 获取账号绑定状态
@@ -20,6 +34,7 @@ public class OperatorUtil {
 	    PreparedStatement ps=null;
 	    ResultSet rs=null;
 		conn=new DBCPConnection().getConnection();
+		System.out.println("open_id="+fromUserName);
 		String selectSql="select * from crm_stu_wechat where open_id='"+fromUserName+"'";
 		if(conn==null){
 			return "连接数据库失败";
@@ -33,19 +48,21 @@ public class OperatorUtil {
 					return "请输入\"用户名绑定\"+登录用户名  如:用户名绑定fangw";
 				}
 			} catch (SQLException e) {
+				System.out.println("查询数据库失败");
 				return "查询数据库失败";
 			}finally{
 				closeConnection(conn,ps,rs);
 			}
 		}
 	}
+	//获取所有用户
 	public List<String> getAllUser(){
 		Connection conn=null;
 		List<String> list=new ArrayList<String>();
 	    PreparedStatement ps=null;
 	    ResultSet rs=null;
 		conn=new DBCPConnection().getConnection();
-		String selectSql="select * from qx_users ";
+		String selectSql="select * from qx_users";
 		if(conn==null){
 			return null;
 		}else{
@@ -64,7 +81,7 @@ public class OperatorUtil {
 		return list;
 	}
 	/**
-	 * 绑定账号
+	 * 绑定账号，将发送方微信账号与系统账号绑定
 	 * @param fromUserName
 	 * @param userName
 	 * @return
@@ -75,28 +92,37 @@ public class OperatorUtil {
 	    ResultSet rs=null;
 		String result=getBindStatus(fromUserName);
 		if("连接数据库失败".equals(result)||("查询数据库失败".equals(result))){
+			System.out.println("连接数据库失败");
 			return "连接数据库失败";
 		}else if("用户名已绑定".equals(result)){
+			System.out.println("用户名已绑定，无需重复绑定");
 			return "用户名已绑定，无需重复绑定";
 		}
+	
 		conn = new DBCPConnection().getConnection();
 		List<String> list=getAllUser();
 		if(!list.contains(userName)){
+			System.out.println("用户名不存在,绑定失败");
 			return "用户名不存在,绑定失败";
 		}
 	    int i = 0;
-	    String sql = "insert into crm_stu_wechat (open_id,user_name) values(?,?)";
+	    String sql = "insert into crm_stu_wechat (open_id,user_name) values (?,?)";
 	    try {
 	    	ps = conn.prepareStatement(sql);
-	    	ps.setString(1, fromUserName);
-	    	ps.setString(2, userName);
+	    	ps.setString(1, fromUserName);//微信账号
+	    	ps.setString(2, userName);//系统用户名
+	    	System.out.println("ps:"+ps.toString());
 	        i = ps.executeUpdate();
+	        System.out.println("i:"+i);
 	        if(i>0){
+	        	System.out.println("用户名绑定成功");
 	        	return "用户名绑定成功";
 	        }else{
+	        	System.out.println("用户名绑定失败");
 	        	return "用户名绑定失败";
 	        }
 	    } catch (SQLException e) {
+	    	System.out.println("用户名绑定失败，未知错误");
 	    	return "用户名绑定失败，未知错误";
 	    }finally{
 	    	closeConnection(conn,ps,rs);
@@ -275,17 +301,18 @@ public class OperatorUtil {
 		}
 	}
 	/**
-	 * 修改学生信息页面
+	 * 修改学生考试信息页面
 	 * @param fromUserName
 	 * @return
 	 */
-	public String editStuInfo(String fromUserName){
+	public String editStuInfo(String fromUserName,String origin_area){
 		Connection conn=null;
 	    PreparedStatement ps=null;
 	    ResultSet rs=null;
 		String sbStr="";
 		conn = new DBCPConnection().getConnection();
-		String selectSql="select * from crm_stu_wechat where open_id='"+fromUserName+"'";
+		String selectSql="select * from crm_stu_wechat where open_id='"+fromUserName+"'";	
+		
 		if(conn==null){
 			return "连接数据库失败";
 		}else{
@@ -299,21 +326,42 @@ public class OperatorUtil {
 					PreparedStatement psStu=connStu.prepareStatement(selectStuSql);
 					ResultSet rsStu=psStu.executeQuery();
 					if(rsStu.next()){
-						String name=rsStu.getString("id");
-						sbStr="点击修改个人信息";  
-						return sbStr;
+//						String name=rsStu.getString("id");
+//						sbStr="点击修改个人信息";  
+						String sql = "update crm_student set (origin_area) values (?) where user_id="+userName;
+		
+					    try {
+					    	ps = conn.prepareStatement(sql);
+					    	ps.setString(1, origin_area);//考试范围					    
+					    	System.out.println("ps:"+ps.toString());
+					       int i = ps.executeUpdate();
+					        System.out.println("i:"+i);
+					        if(i>0){
+					        	System.out.println("用户信息修改成功");
+					        	return "用户信息修改成功";
+					        }else{
+					        	System.out.println("用户信息修改失败");
+					        	return "用户信息修改失败";
+					        }
+					    } catch (SQLException e) {
+					    	System.out.println("查询数据库失败");
+					    	return "查询数据库失败";
+					    }finally{
+					    	closeConnection(conn,ps,rs);
+					    }
 					}else{
 						return "您未注册，请在电脑端完成注册";
 					}
 				}else{
 					return "用户名未绑定,请输入\"用户名绑定\"+登录用户名  如:用户名绑定fangw";
 				}
-			} catch (SQLException e) {
-				return "查询数据库失败";
-			}finally{
-				closeConnection(conn,ps,rs);
-			}
-		}
+			
+		}catch (SQLException e) {
+	    	System.out.println("查询数据库失败");
+	    	return "查询数据库失败";
+	    }finally{
+	    	closeConnection(conn,ps,rs);
+	    }}
 	}
 	/**
 	 * 修改行程
@@ -337,14 +385,14 @@ public class OperatorUtil {
 					String userName=rs.getString("user_name");  
 					String selectStuSql="select * from crm_student where user_id='"+userName+"'";
 					Connection connStu= new DBCPConnection().getConnection();
-					PreparedStatement psStu=connStu.prepareStatement(selectStuSql);
+					PreparedStatement psStu=connStu.prepareStatement(selectStuSql);//PreparedStatement是预编译的,对于批量处理可以大大提高效率. 也叫JDBC存储过程
 					ResultSet rsStu=psStu.executeQuery();
 					if(rsStu.next()){
 						String selectTravelSql="select * from crm_student_info where user_id='"+userName+"'";
 						Connection connTravel= new DBCPConnection().getConnection();
 						PreparedStatement psTravel=connTravel.prepareStatement(selectTravelSql);
 						ResultSet rsTravel=psTravel.executeQuery();
-						String name=rsStu.getString("id");
+//						String name=rsStu.getString("id");
 						if(!rsTravel.next()){
 							sbStr="点击新增行程";  
 							return sbStr;

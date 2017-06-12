@@ -14,7 +14,9 @@ public class OpenDBConnection {
 		Connection conn = null;
 		try{
 			Class.forName("com.mysql.jdbc.Driver") ;
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/name", "username", "pwd");
+//			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/name", "username", "pwd");
+			conn = DriverManager.getConnection("jdbc:mysql://119.23.20.192:3306/wechat", "root", "tg!QAZ");
+
 			return conn;
 			}catch(Exception e){
 				e.printStackTrace();
@@ -75,7 +77,7 @@ public class OpenDBConnection {
             		break;
             	}
                 //String name = rs.getString("user_id");  
-                //String examTime = rs.getString("exam_time");  
+//                String examTime = rs.getString("exam_time");  
                 String examSchool = rs.getString("exam_school");  
                 sb.append(examSchool);
                 count++;

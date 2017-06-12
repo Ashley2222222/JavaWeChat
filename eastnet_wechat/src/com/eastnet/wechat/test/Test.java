@@ -16,8 +16,7 @@ public class Test {
 	 */
 	public static void main(String[] args) throws SQLException {
 		StringBuffer sb=new StringBuffer();
-//		String selectStuSql="select * from crm_student where user_id='fangw'";
-		String selectStuSql="select * from user where user_id='fangw'";
+		String selectStuSql="select * from crm_student where user_id='fangw'";
 
 		Connection connStu= new DBCPConnection().getConnection();
 		PreparedStatement psStu=connStu.prepareStatement(selectStuSql);

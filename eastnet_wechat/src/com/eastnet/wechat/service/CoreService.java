@@ -72,7 +72,7 @@ public class CoreService {
 					// 事件KEY值，与创建自定义菜单时指定的KEY值对应
 					String eventKey = requestMap.get("EventKey");
 					if ("stuInfoEdit".equals(eventKey)) {// 个人信息修改
-						respContent = new OperatorUtil().editStuInfo(fromUserName);
+						respContent = new OperatorUtil().editStuInfo(fromUserName,"");
 					} else if ("stuInfoView".equals(eventKey)) {
 						respContent = new OperatorUtil().viewStuInfo(fromUserName);
 					} else if ("stuTravelView".equals(eventKey)) {// 行程查看
@@ -216,33 +216,45 @@ public class CoreService {
 
 					Connection conn = new DBCPConnection().getConnection();
 					if (conn == null) {
+						System.out.println("连接数据库失败");
 						respContent = "连接数据库失败";
 					} else {
+						System.out.println("连接数据库成功");
 						int count = 0;
 						String sql = "select * from crm_student_info";
 						PreparedStatement ps = conn.prepareStatement(sql);
 						ResultSet rs = ps.executeQuery();
+						
 						while (rs.next()) {
 							if (count > 6) {
 								break;
 							}
 							String name = rs.getString("exam_time");
+							System.out.println("exam_time:"+name);
 							sb.append(name).append("/n");
 							count++;
 						}
 					}
-					respContent = sb.toString();
-					respContent = new OpenDBConnection().selectData("select *from crm_student_info");
-					respContent = new OperatorUtil().bindAccount(fromUserName, userName);
+//					respContent = sb.toString();
+//					respContent = new OpenDBConnection().selectData("select *from crm_student_info");
+					respContent = new OperatorUtil().bindAccount(fromUserName, userName);//将发送方微信账号与系统账号绑定
+					System.out.print("afterBind:"+respContent);
 				} else if (fromContent.contains("解除绑定")) {
 					userName = fromContent.substring(4).trim();
-					if ("oS-GywW5Aljk6V5v1JGDiUAOMdX0".equals(fromUserName)) {
+					if ("oEiOtxE85niSnweu9MEMZkiTn0g8".equals(fromUserName)) {
 						respContent = new OperatorUtil().unBindAccount(userName);
 					} else {
 						respContent = "您不具备管理员权限";
 					}
 
-				} else if ("行程查看".equals(fromContent)) {
+				}else if ("个人信息".equals(fromContent)) {
+					respContent = new OperatorUtil().viewStuInfo(fromUserName);
+				} else if (fromContent.contains("个人信息修改")) {
+					String origin_area = fromContent.substring(7).trim();
+					respContent = new OperatorUtil().editStuInfo(fromUserName,origin_area);
+				}
+				
+				else if ("行程查看".equals(fromContent)) {
 					respContent = new OperatorUtil().viewTravel(fromUserName);
 				} else if ("行程添加".equals(fromContent)) {
 					respContent = new OperatorUtil().addTravel(fromUserName);
