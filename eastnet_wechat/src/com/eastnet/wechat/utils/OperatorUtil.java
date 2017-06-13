@@ -328,7 +328,7 @@ public class OperatorUtil {
 					if(rsStu.next()){
 //						String name=rsStu.getString("id");
 //						sbStr="点击修改个人信息";  
-						String sql = "update crm_student set (origin_area) values (?) where user_id="+userName;
+						String sql = "update crm_student set origin_area= ? where user_id='"+userName+"'";
 		
 					    try {
 					    	ps = conn.prepareStatement(sql);

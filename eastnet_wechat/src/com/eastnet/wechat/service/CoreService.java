@@ -250,7 +250,7 @@ public class CoreService {
 				}else if ("个人信息".equals(fromContent)) {
 					respContent = new OperatorUtil().viewStuInfo(fromUserName);
 				} else if (fromContent.contains("个人信息修改")) {
-					String origin_area = fromContent.substring(7).trim();
+					String origin_area = fromContent.substring(6).trim();
 					respContent = new OperatorUtil().editStuInfo(fromUserName,origin_area);
 				}
 				
